@@ -1,35 +1,26 @@
-import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
-import './App.css'
+import React from 'react';
+import { Routes, Route, Link } from 'react-router-dom';
+import Feed from './pages/Feed';
+import Perfil from './pages/Perfil';
+import { User, Search, MessageCircle } from 'lucide-react';
+import './App.css';
 
 function App() {
-  const [count, setCount] = useState(0)
-
   return (
-    <>
-      <div>
-        <a href="https://vite.dev" target="_blank">
-          <img src={viteLogo} className="logo" alt="Vite logo" />
-        </a>
-        <a href="https://react.dev" target="_blank">
-          <img src={reactLogo} className="logo react" alt="React logo" />
-        </a>
-      </div>
-      <h1>Vite + React</h1>
-      <div className="card">
-        <button onClick={() => setCount((count) => count + 1)}>
-          count is {count}
-        </button>
-        <p>
-          Edit <code>src/App.jsx</code> and save to test HMR
-        </p>
-      </div>
-      <p className="read-the-docs">
-        Click on the Vite and React logos to learn more
-      </p>
-    </>
-  )
+    <div className="App">
+      <Routes>
+        <Route path="/" element={<Feed />} />
+        <Route path="/perfil" element={<Perfil />} />
+      </Routes>
+
+      {/* Barra de Navegación Inferior estilo App Mobile */}
+      <nav className="bottom-nav">
+        <Link to="/"><Search /></Link>
+        <Link to="/mensajes"><MessageCircle /></Link>
+        <Link to="/perfil"><User /></Link>
+      </nav>
+    </div>
+  );
 }
 
-export default App
+export default App;
