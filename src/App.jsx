@@ -4,6 +4,8 @@ import Feed from './pages/Feed';
 import Perfil from './pages/Perfil';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
+import VerEquipo from './pages/VerEquipo';     // <-- NUEVO
+import VerJugador from './pages/VerJugador';   // <-- NUEVO
 import { User, Search, MessageCircle } from 'lucide-react';
 import './App.css';
 
@@ -17,7 +19,6 @@ function App() {
     if (user) setIsAuthenticated(true);
   }, []);
 
-  // Si NO está logueado, solo puede ver Login o Registro
   if (!isAuthenticated) {
     return (
       <div className="App">
@@ -30,7 +31,6 @@ function App() {
     );
   }
 
-  // Si SÍ está logueado, ve la aplicación normal
   return (
     <div className="App">
       {location.pathname !== '/perfil' && (
@@ -42,6 +42,8 @@ function App() {
       <Routes>
         <Route path="/" element={<Feed />} />
         <Route path="/perfil" element={<Perfil />} />
+        <Route path="/equipo/:id" element={<VerEquipo />} />     {/* <-- NUEVO */}
+        <Route path="/jugador/:id" element={<VerJugador />} />   {/* <-- NUEVO */}
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
 

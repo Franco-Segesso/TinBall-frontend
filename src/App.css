@@ -1,194 +1,168 @@
-/* Contenedor principal estilo Celular */
-.App {
-  width: 100%;
-  max-width: 450px; /* Ancho máximo de celular */
-  min-height: 100vh;
-  background-color: #f8f9fa;
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  box-shadow: 0 0 20px rgba(0,0,0,0.1);
-  overflow: hidden;
+/* --- RESETEO GENERAL (Importante para que no se vea a la izquierda) --- */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
 }
 
-/* Barra superior */
-.navbar {
+body {
+  font-family: 'Inter', system-ui, -apple-system, sans-serif;
+  background-color: #f0f2f5; /* Fondo gris claro tipo App */
+  color: #1a1a1a;
+  overflow-x: hidden;
+  display: flex;
+  justify-content: center; /* Centrado horizontal en PC */
+}
+
+#root {
   width: 100%;
+  display: flex;
+  justify-content: center;
+}
+
+/* --- CONTENEDOR PRINCIPAL (Estilo Celular) --- */
+.App {
+  width: 100%;
+  max-width: 450px; /* Ancho máximo para que parezca un celu en la compu */
+  min-height: 100vh;
+  background-color: white;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 0 15px rgba(0,0,0,0.1); /* Sombra suave en PC */
+}
+
+/* --- NAVBAR SUPERIOR --- */
+.navbar {
   height: 60px;
-  background: white;
+  background-color: white;
   display: flex;
   align-items: center;
   justify-content: center;
   border-bottom: 1px solid #eaeaea;
-  z-index: 50;
+  z-index: 10;
 }
 
 .navbar h1 {
   font-size: 1.5rem;
-  color: #28a745;
-  margin: 0;
+  color: #28a745; /* Verde TinBall */
 }
 
-/* Contenedor del Feed */
-.feed-page {
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+/* --- PANTALLAS (Feed, Perfil, Login) --- */
+.feed-page, .perfil-container, .login-container {
+  flex: 1;
   padding: 20px;
-  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* Centrado de contenido */
 }
 
+/* --- FEED (Tinder Style) --- */
 .cards-stack {
   position: relative;
   width: 100%;
   max-width: 350px;
-  height: 550px;
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  height: 500px; /* Alto de la tarjeta */
+  margin-top: 20px;
 }
 
-/* Tarjeta estilo Tinder */
 .tinder-card {
-  position: absolute; /* Clave para que se apilen */
   width: 100%;
   height: 100%;
   background: white;
   border-radius: 20px;
-  box-shadow: 0 8px 25px rgba(0,0,0,0.15);
-  display: flex;
-  flex-direction: column;
+  box-shadow: 0 10px 20px rgba(0,0,0,0.15);
   overflow: hidden;
+  position: absolute; /* Para apilar tarjetas */
   will-change: transform;
-}
-
-.card-content {
-  width: 100%;
-  height: 100%;
-  display: flex;
-  flex-direction: column;
 }
 
 .card-content img {
   width: 100%;
-  height: 55%;
+  height: 300px; /* Alto de la foto en la tarjeta */
   object-fit: cover;
-  background-color: #e9ecef;
+  pointer-events: none; /* Evita que el drag interactúe con la img */
 }
 
 .card-info {
   padding: 15px;
-  flex-grow: 1;
-  color: #222; /* Texto oscuro garantizado */
+  text-align: left;
 }
 
-.card-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 10px;
-}
-
-.card-header h2 {
-  margin: 0;
-  font-size: 1.4rem;
-  font-weight: 700;
-  color: #000;
-}
-
-.zona-badge {
-  background: #e8f5e9;
-  color: #28a745;
-  padding: 5px 10px;
-  border-radius: 20px;
-  font-size: 0.85rem;
-  font-weight: 600;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-}
-
-.card-stats {
-  display: flex;
+/* --- PANTALLA DE PERFIL Y EDICIÓN --- */
+.perfil-container {
   gap: 15px;
-  margin-bottom: 10px;
-  font-size: 0.9rem;
-  color: #555;
 }
 
-.card-stats p {
-  display: flex;
-  align-items: center;
-  gap: 5px;
-  margin: 0;
-}
-
-.card-description {
-  font-size: 0.95rem;
-  color: #666;
-  line-height: 1.4;
-  margin-top: 5px;
-}
-
-/* Botones de Acción */
-.card-buttons {
-  display: flex;
-  justify-content: space-evenly;
-  align-items: center;
-  padding: 15px;
-  background: white;
-  border-top: 1px solid #fafafa;
-}
-
-.btn-dislike, .btn-like {
-  width: 65px;
-  height: 65px;
-  border-radius: 50%;
-  border: none;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  cursor: pointer;
-  background: white;
-  box-shadow: 0 4px 15px rgba(0,0,0,0.1);
-  transition: transform 0.1s ease;
-}
-
-.btn-dislike { color: #ff4458; }
-.btn-like { color: #28a745; }
-
-.btn-dislike:active, .btn-like:active { transform: scale(0.9); }
-
-/* Navegación Inferior */
-.bottom-nav {
+.perfil-container input, .perfil-container textarea {
   width: 100%;
+  padding: 12px;
+  border-radius: 8px;
+  border: 1px solid #ddd;
+  font-size: 1rem;
+}
+
+/* --- ARREGLO DE FOTO ENORME (Avatar) --- */
+.avatar-edit {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* SOLUCIÓN: Definimos tamaño fijo, centrado y object-fit */
+.avatar-edit img {
+  width: 150px;      /* Tamaño fijo ancho */
+  height: 150px;     /* Tamaño fijo alto (cuadrado) */
+  border-radius: 50%; /* Lo hace circular */
+  object-fit: cover; /* Evita que la imagen se estire feo */
+  border: 4px solid #eaeaea;
+  background-color: #f0f2f5;
+}
+
+/* Input file abajo de la foto */
+.avatar-edit input[type="file"] {
+  font-size: 0.9rem;
+  color: #666;
+  border: none;
+  background: none;
+  width: auto;
+}
+
+/* --- BOTONES --- */
+.btn-save {
+  width: 100%;
+  padding: 12px;
+  background-color: #28a745; /* Verde TinBall */
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.btn-save:hover {
+  background-color: #218838;
+}
+
+/* --- NAV INFERIOR --- */
+.bottom-nav {
   height: 65px;
-  background: white;
+  background-color: white;
   display: flex;
   justify-content: space-around;
   align-items: center;
   border-top: 1px solid #eaeaea;
-  z-index: 50;
 }
 
 .bottom-nav a {
   color: #aaa;
-  text-decoration: none;
-  transition: 0.2s;
+  transition: color 0.2s;
 }
 
-.bottom-nav a:hover { color: #28a745; }
-
-.no-more { text-align: center; color: #666; }
-.no-more button {
-  margin-top: 15px;
-  padding: 10px 20px;
-  background: #28a745;
-  color: white;
-  border: none;
-  border-radius: 20px;
-  cursor: pointer;
+.bottom-nav a.active {
+  color: #28a745;
 }
-
-.login-container { display: flex; flex-direction: column; align-items: center; justify-content: center; height: 100vh; padding: 20px; } .login-form { display: flex; flex-direction: column; width: 100%; gap: 15px; margin-top: 20px; } .login-form input { padding: 12px; border-radius: 8px; border: 1px solid #ccc; }

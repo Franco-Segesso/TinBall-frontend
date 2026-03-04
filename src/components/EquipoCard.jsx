@@ -1,17 +1,18 @@
 import React from 'react';
 import { motion, useMotionValue, useTransform } from 'framer-motion';
-import { MapPin, Trophy, Users, X, Heart } from 'lucide-react';
+import { MapPin, Trophy, Users, X, Heart, ArrowRight, Info } from 'lucide-react';
+import { useNavigate } from 'react-router-dom'; // <-- NUEVO IMPORT
 
-const EquipoCard = ({ equipo, onLike, onDislike }) => {
+const EquipoCard = ({ equipo, onLike, onDislike, userType }) => {
+  const navigate = useNavigate(); // <-- INICIAMOS NAVEGACIÓN
   const x = useMotionValue(0);
   const rotate = useTransform(x, [-150, 150], [-15, 15]);
   const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
 
-  // Si x > 100 (Derecha) es Like. Si x < -100 (Izquierda) es Rechazo.
   const handleDragEnd = (event, info) => {
     const offset = info.offset.x;
     if (offset > 100) {
-      onLike(equipo.id);
+      userType === 'equipo' ? onLike(equipo.id) : onDislike(equipo.id);
     } else if (offset < -100) {
       onDislike(equipo.id);
     }
@@ -28,26 +29,34 @@ const EquipoCard = ({ equipo, onLike, onDislike }) => {
     >
       <div className="card-content">
         <img 
-          src={equipo.fotoUrl || 'https://placehold.co/600x400/28a745/white?text=Sin+Foto'} 
+          src={equipo.fotoUrl && equipo.fotoUrl !== "" ? equipo.fotoUrl : 'https://placehold.co/600x400/28a745/white?text=Sin+Foto'} 
           alt={equipo.nombre} 
           draggable="false"
-          style={{ width: '100%', minHeight: '280px', objectFit: 'cover', backgroundColor: '#e9ecef' }}
           onError={(e) => {
             e.target.onerror = null; 
-            // Si el usuario pone un link roto, mostramos un cartel rojo
-            e.target.src = 'https://placehold.co/600x400/dc3545/white?text=Link+Roto';
+            e.target.src = 'https://placehold.co/600x400/28a745/white?text=Foto+No+Disponible';
           }}
         />
         
         <div className="card-info">
-          <div className="card-header">
-            <h2>{equipo.nombre}</h2>
-            <span className="zona-badge">
-              <MapPin size={14} /> {equipo.zona}
-            </span>
+          {/* NUEVO: CABECERA CON BOTÓN DE INFO */}
+          <div className="card-header" style={{display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start'}}>
+            <div>
+              <h2 style={{margin: 0}}>{equipo.nombre}</h2>
+              <span className="zona-badge" style={{display: 'inline-block', marginTop: '5px'}}>
+                <MapPin size={14} /> {equipo.zona}
+              </span>
+            </div>
+            <button 
+              onPointerDown={(e) => e.stopPropagation()} 
+              onClick={() => navigate(`/equipo/${equipo.id}`)}
+              style={{background: 'none', border: 'none', color: '#28a745', cursor: 'pointer', padding: '5px'}}
+            >
+              <Info size={28} />
+            </button>
           </div>
           
-          <div className="card-stats">
+          <div className="card-stats" style={{marginTop: '10px'}}>
             <p><Trophy size={16} /> <span>Nivel: {equipo.nivelPromedio}</span></p>
             <p><Users size={16} /> <span>{equipo.jugadores?.length || 0} Integrantes</span></p>
           </div>
@@ -55,14 +64,28 @@ const EquipoCard = ({ equipo, onLike, onDislike }) => {
           <p className="card-description">{equipo.descripcion}</p>
         </div>
 
-        {/* SOLUCIÓN: onPointerDown evita que el clic arrastre la tarjeta por accidente */}
         <div className="card-buttons" onPointerDown={(e) => e.stopPropagation()}>
-          <button className="btn-dislike" onClick={() => onDislike(equipo.id)}>
-            <X size={30} />
-          </button>
-          <button className="btn-like" onClick={() => onLike(equipo.id)}>
-            <Heart size={30} fill="currentColor" />
-          </button>
+          {userType === 'equipo' ? (
+            <>
+              <button className="btn-dislike" onClick={() => onDislike(equipo.id)}>
+                <X size={30} />
+              </button>
+              <button className="btn-like" onClick={() => onLike(equipo.id)}>
+                <Heart size={30} fill="currentColor" />
+              </button>
+            </>
+          ) : (
+            <button 
+              onClick={() => onDislike(equipo.id)} 
+              style={{
+                width: '90%', padding: '12px', borderRadius: '12px', border: 'none', 
+                backgroundColor: '#f0f2f5', color: '#555', fontSize: '1.1rem', fontWeight: 'bold',
+                display: 'flex', justifyContent: 'center', alignItems: 'center', gap: '10px', cursor: 'pointer'
+              }}
+            >
+              Siguiente Equipo <ArrowRight size={20} />
+            </button>
+          )}
         </div>
       </div>
     </motion.div>
