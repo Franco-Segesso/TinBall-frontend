@@ -3,16 +3,16 @@ import { motion, useMotionValue, useTransform } from 'framer-motion';
 import { MapPin, Trophy, Users, X, Heart } from 'lucide-react';
 
 const EquipoCard = ({ equipo, onLike, onDislike }) => {
-  // Configuración del movimiento de la tarjeta
   const x = useMotionValue(0);
-  const rotate = useTransform(x, [-100, 100], [-10, 10]);
-  const opacity = useTransform(x, [-150, -100, 0, 100, 150], [0, 1, 1, 1, 0]);
+  const rotate = useTransform(x, [-150, 150], [-15, 15]);
+  const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
 
-  // Detectar cuándo termina el arrastre para disparar la acción
+  // Si x > 100 (Derecha) es Like. Si x < -100 (Izquierda) es Rechazo.
   const handleDragEnd = (event, info) => {
-    if (info.offset.x > 100) {
+    const offset = info.offset.x;
+    if (offset > 100) {
       onLike(equipo.id);
-    } else if (info.offset.x < -100) {
+    } else if (offset < -100) {
       onDislike(equipo.id);
     }
   };
@@ -20,24 +20,23 @@ const EquipoCard = ({ equipo, onLike, onDislike }) => {
   return (
     <motion.div
       className="tinder-card"
-      style={{ 
-        x, 
-        rotate, 
-        opacity, 
-        position: 'absolute', 
-        cursor: 'grab' 
-      }}
+      style={{ x, rotate, opacity, position: 'absolute', cursor: 'grab' }}
       drag="x"
       dragConstraints={{ left: 0, right: 0 }}
       onDragEnd={handleDragEnd}
       whileTap={{ cursor: 'grabbing' }}
     >
       <div className="card-content">
-        {/* Imagen principal del equipo */}
         <img 
-          src={equipo.fotoUrl || 'https://images.unsplash.com/photo-1574629810360-7efbbe195018?q=80&w=500'} 
+          src={equipo.fotoUrl || 'https://placehold.co/600x400/28a745/white?text=Sin+Foto'} 
           alt={equipo.nombre} 
           draggable="false"
+          style={{ width: '100%', minHeight: '280px', objectFit: 'cover', backgroundColor: '#e9ecef' }}
+          onError={(e) => {
+            e.target.onerror = null; 
+            // Si el usuario pone un link roto, mostramos un cartel rojo
+            e.target.src = 'https://placehold.co/600x400/dc3545/white?text=Link+Roto';
+          }}
         />
         
         <div className="card-info">
@@ -56,8 +55,8 @@ const EquipoCard = ({ equipo, onLike, onDislike }) => {
           <p className="card-description">{equipo.descripcion}</p>
         </div>
 
-        {/* Botones inferiores para acción manual */}
-        <div className="card-buttons">
+        {/* SOLUCIÓN: onPointerDown evita que el clic arrastre la tarjeta por accidente */}
+        <div className="card-buttons" onPointerDown={(e) => e.stopPropagation()}>
           <button className="btn-dislike" onClick={() => onDislike(equipo.id)}>
             <X size={30} />
           </button>

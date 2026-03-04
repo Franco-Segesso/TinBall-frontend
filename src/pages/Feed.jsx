@@ -6,7 +6,7 @@ import { AnimatePresence } from 'framer-motion';
 const Feed = () => {
   const [equipos, setEquipos] = useState([]);
   const [currentIndex, setCurrentIndex] = useState(0);
-  const miEquipoId = 1; 
+  const miEquipoId = 1; // Tu ID simulado
 
   useEffect(() => {
     api.get('/equipos').then(res => {
@@ -17,6 +17,26 @@ const Feed = () => {
 
   const nextCard = () => setCurrentIndex(prev => prev + 1);
 
+  // ESTA ES LA FUNCIÓN QUE FALTABA PARA EL LIKE (Derecha)
+  const handleLike = async (receptorId) => {
+    try {
+      const res = await api.post(`/likes/dar-like/${miEquipoId}/${receptorId}`);
+      if(res.data.includes("MATCH")) {
+        alert("🎉 ¡HAY MATCH! " + res.data);
+      }
+      nextCard();
+    } catch (err) {
+      console.error("Error al dar like", err);
+      nextCard();
+    }
+  };
+
+  // Función para el RECHAZO (Izquierda)
+  const handleDislike = (receptorId) => {
+    console.log("Rechazaste al equipo:", receptorId);
+    nextCard();
+  };
+
   return (
     <div className="feed-page">
       <div className="cards-stack">
@@ -25,12 +45,13 @@ const Feed = () => {
             <EquipoCard 
               key={equipos[currentIndex].id}
               equipo={equipos[currentIndex]} 
-              onLike={() => nextCard()} 
-              onDislike={() => nextCard()}
+              onLike={handleLike} 
+              onDislike={handleDislike}
             />
           ) : (
             <div className="no-more">
               <h3>⚽ ¡Eso es todo por ahora!</h3>
+              <p>Esperá a que se sumen más equipos.</p>
               <button onClick={() => setCurrentIndex(0)}>Reiniciar</button>
             </div>
           )}
