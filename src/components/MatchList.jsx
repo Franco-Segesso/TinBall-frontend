@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import ChatWindow from './ChatWindow';
-import { MessageCircle } from 'lucide-react'; // Importamos un iconito para decorar
+import { MessageCircle } from 'lucide-react';
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
 const MatchList = () => {
   const [matches, setMatches] = useState([]);
@@ -15,7 +17,7 @@ const MatchList = () => {
 
     const fetchMyMatches = async () => {
       try {
-        const response = await fetch(`http://localhost:8080/api/likes/mis-matches/${miId}`);
+        const response = await fetch(`${BACKEND_URL}/api/likes/mis-matches/${miId}`);
         if (response.ok) {
           const data = await response.json();
           setMatches(data);
@@ -30,13 +32,11 @@ const MatchList = () => {
 
   return (
     <div className="chat-layout">
-      {/* Columna Izquierda: Lista de Contactos */}
       <div className="contacts-sidebar">
         <h2>Contactos</h2>
         <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
           {matches.map((like) => {
             const rival = like.equipoReceptor;
-            
             return (
               <li 
                 key={like.id}
@@ -50,7 +50,6 @@ const MatchList = () => {
         </ul>
       </div>
 
-      {/* Columna Derecha: Ventana dinámica de chat */}
       <div className="chat-main">
         {selectedRival ? (
           <ChatWindow 

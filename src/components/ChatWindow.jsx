@@ -1,11 +1,13 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
-import { Send } from 'lucide-react'; // Importamos el ícono de enviar
+import { Send } from 'lucide-react'; 
+
+const BACKEND_URL = import.meta.env.VITE_BACKEND_URL || 'http://localhost:8080';
 
 const fetchChatHistory = async (salaId) => {
   try {
-    const response = await fetch(`http://localhost:8080/api/chat/history/${salaId}`);
+    const response = await fetch(`${BACKEND_URL}/api/chat/history/${salaId}`);
     if (!response.ok) {
       throw new Error('Error de red al intentar descargar el historial');
     }
@@ -29,7 +31,7 @@ const ChatWindow = ({ salaId, currentUser, otherTeamName }) => {
     };
     
     loadHistory().then(() => {
-      const socket = new SockJS('http://localhost:8080/ws-tinball');
+      const socket = new SockJS(`${BACKEND_URL}/ws-tinball`);
       stompClient.current = Stomp.over(socket);
 
       stompClient.current.connect({}, () => {
@@ -77,13 +79,11 @@ const ChatWindow = ({ salaId, currentUser, otherTeamName }) => {
               key={index} 
               className={`message-bubble ${isMe ? 'sent' : 'received'}`}
             >
-              {/* Solo mostramos el nombre si el mensaje es del rival, para que parezca un grupo */}
               {!isMe && <span className="message-sender">{msg.sender}</span>}
               <span>{msg.content}</span>
             </div>
           );
         })}
-        {/* Div invisible para anclar el auto-scroll al fondo */}
         <div ref={messagesEndRef} /> 
       </div>
 
