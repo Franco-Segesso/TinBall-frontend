@@ -4,8 +4,10 @@ import Feed from './pages/Feed';
 import Perfil from './pages/Perfil';
 import Login from './pages/Login';
 import Registro from './pages/Registro';
-import VerEquipo from './pages/VerEquipo';     // <-- NUEVO
-import VerJugador from './pages/VerJugador';   // <-- NUEVO
+import VerEquipo from './pages/VerEquipo';     
+import VerJugador from './pages/VerJugador';   
+// IMPORTANTE: Importamos tu nueva pantalla de chats
+import MatchList from './components/MatchList'; 
 import { User, Search, MessageCircle } from 'lucide-react';
 import './App.css';
 
@@ -42,8 +44,10 @@ function App() {
       <Routes>
         <Route path="/" element={<Feed />} />
         <Route path="/perfil" element={<Perfil />} />
-        <Route path="/equipo/:id" element={<VerEquipo />} />     {/* <-- NUEVO */}
-        <Route path="/jugador/:id" element={<VerJugador />} />   {/* <-- NUEVO */}
+        <Route path="/equipo/:id" element={<VerEquipo />} />     
+        <Route path="/jugador/:id" element={<VerJugador />} />   
+        {/* IMPORTANTE: Agregamos la ruta para los mensajes */}
+        <Route path="/mensajes" element={<MatchList />} /> 
         <Route path="*" element={<Navigate to="/" />} />
       </Routes>
 
