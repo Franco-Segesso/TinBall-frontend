@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import api from '../api/axios';
 import { useNavigate } from 'react-router-dom';
+import { Mail, Lock } from 'lucide-react'; // Importamos íconos para los inputs
 import '../App.css';
 
 const Login = ({ onLogin }) => {
@@ -16,44 +17,81 @@ const Login = ({ onLogin }) => {
       const endpoint = tipo === 'jugador' ? '/auth/login/jugador' : '/auth/login/equipo';
       const res = await api.post(endpoint, { email, password });
       
-      // Guardamos los datos y el TIPO de cuenta para que la app sepa qué mostrar después
       localStorage.setItem('user', JSON.stringify(res.data));
       localStorage.setItem('userType', tipo);
       
       onLogin(); 
     } catch (err) {
-      setError('Credenciales incorrectas');
+      setError('Credenciales incorrectas. Verificá tu correo y contraseña.');
     }
   };
 
   return (
-    <div className="login-container">
-      <h2>⚽ TinBall</h2>
-      <p>Iniciá sesión para entrar a la cancha</p>
-      
-      <div className="tipo-selector" style={{display: 'flex', gap: '10px', marginBottom: '20px', marginTop: '10px'}}>
-        <button 
-          type="button" 
-          onClick={() => setTipo('jugador')}
-          className={tipo === 'jugador' ? 'btn-save' : 'btn-outline'}
-        >Jugador</button>
-        <button 
-          type="button" 
-          onClick={() => setTipo('equipo')}
-          className={tipo === 'equipo' ? 'btn-save' : 'btn-outline'}
-        >Equipo</button>
-      </div>
-
-      <form onSubmit={handleLogin} className="login-form">
-        <input type="email" placeholder="Correo electrónico" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        <input type="password" placeholder="Contraseña" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        {error && <p className="error-msg" style={{color: 'red', margin: 0}}>{error}</p>}
+    <div className="auth-page-container">
+      <div className="auth-card">
         
-        <button type="submit" className="btn-save">Ingresar</button>
-        <button type="button" className="btn-outline" onClick={() => navigate('/registro')} style={{marginTop: '10px'}}>
-          No tengo cuenta (Registrarme)
+        <div className="auth-logo">
+          <h2>TinBall ⚽</h2>
+          <p>Entrá a la cancha y encontrá rivales</p>
+        </div>
+
+        {/* Toggle Jugador/Equipo */}
+        <div className="role-selector">
+          <button 
+            type="button" 
+            onClick={() => setTipo('jugador')}
+            className={`role-btn ${tipo === 'jugador' ? 'active' : ''}`}
+          >
+            Jugador
+          </button>
+          <button 
+            type="button" 
+            onClick={() => setTipo('equipo')}
+            className={`role-btn ${tipo === 'equipo' ? 'active' : ''}`}
+          >
+            Equipo
+          </button>
+        </div>
+
+        {error && <div className="error-msg-auth">{error}</div>}
+
+        <form onSubmit={handleLogin} className="auth-form">
+          <div className="input-group">
+            <Mail size={18} className="input-icon" />
+            <input 
+              type="email" 
+              placeholder="Correo electrónico" 
+              value={email} 
+              onChange={(e) => setEmail(e.target.value)} 
+              required 
+            />
+          </div>
+
+          <div className="input-group">
+            <Lock size={18} className="input-icon" />
+            <input 
+              type="password" 
+              placeholder="Contraseña" 
+              value={password} 
+              onChange={(e) => setPassword(e.target.value)} 
+              required 
+            />
+          </div>
+          
+          <button type="submit" className="auth-submit-btn">
+            Iniciar Sesión
+          </button>
+        </form>
+
+        <button 
+          type="button" 
+          className="auth-switch-link" 
+          onClick={() => navigate('/registro')}
+        >
+          ¿No tenés cuenta? <span>Registrate acá</span>
         </button>
-      </form>
+
+      </div>
     </div>
   );
 };

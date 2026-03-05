@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ChatWindow from './ChatWindow';
+import { MessageCircle } from 'lucide-react'; // Importamos un iconito para decorar
 
 const MatchList = () => {
   const [matches, setMatches] = useState([]);
@@ -28,10 +29,11 @@ const MatchList = () => {
   }, [miId]);
 
   return (
-    <div style={{ display: 'flex' }}>
-      <div style={{ width: '30%', borderRight: '1px solid #ccc', padding: '10px' }}>
-        <h2>Tus Contactos</h2>
-        <ul style={{ listStyleType: 'none', padding: 0 }}>
+    <div className="chat-layout">
+      {/* Columna Izquierda: Lista de Contactos */}
+      <div className="contacts-sidebar">
+        <h2>Contactos</h2>
+        <ul style={{ listStyleType: 'none', padding: 0, margin: 0 }}>
           {matches.map((like) => {
             const rival = like.equipoReceptor;
             
@@ -39,12 +41,7 @@ const MatchList = () => {
               <li 
                 key={like.id}
                 onClick={() => setSelectedRival(rival)}
-                style={{ 
-                  padding: '15px', 
-                  borderBottom: '1px solid #eee', 
-                  cursor: 'pointer',
-                  backgroundColor: selectedRival?.id === rival.id ? '#f0f0f0' : 'transparent'
-                }}
+                className={`contact-item ${selectedRival?.id === rival.id ? 'active' : ''}`}
               >
                 {rival.nombre}
               </li>
@@ -53,7 +50,8 @@ const MatchList = () => {
         </ul>
       </div>
 
-      <div style={{ width: '70%', padding: '10px' }}>
+      {/* Columna Derecha: Ventana dinámica de chat */}
+      <div className="chat-main">
         {selectedRival ? (
           <ChatWindow 
             salaId={`${Math.min(miId, selectedRival.id)}-${Math.max(miId, selectedRival.id)}`} 
@@ -61,8 +59,9 @@ const MatchList = () => {
             otherTeamName={selectedRival.nombre} 
           />
         ) : (
-          <div style={{ textAlign: 'center', marginTop: '50px', color: '#888' }}>
-            Selecciona un equipo para organizar el partido.
+          <div className="empty-chat-state">
+            <MessageCircle size={48} color="#ccc" />
+            <p>Selecciona un equipo para<br/>empezar a organizar.</p>
           </div>
         )}
       </div>

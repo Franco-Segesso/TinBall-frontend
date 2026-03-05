@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Stomp } from '@stomp/stompjs';
 import SockJS from 'sockjs-client';
+import { Send } from 'lucide-react'; // Importamos el ícono de enviar
 
 const fetchChatHistory = async (salaId) => {
   try {
@@ -54,8 +55,7 @@ const ChatWindow = ({ salaId, currentUser, otherTeamName }) => {
       const chatMessage = {
         sender: currentUser,
         content: newMessage,
-        salaId: salaId,
-        timestamp: new Date().toISOString()
+        salaId: salaId
       };
       
       stompClient.current.send(`/app/chat.send`, {}, JSON.stringify(chatMessage));
@@ -64,36 +64,41 @@ const ChatWindow = ({ salaId, currentUser, otherTeamName }) => {
   };
 
   return (
-    <div className="chat-container">
+    <>
       <div className="chat-header">
-        <h3>Chat con {otherTeamName}</h3>
+        {otherTeamName}
       </div>
       
-      <div className="chat-messages" style={{ height: '400px', overflowY: 'scroll' }}>
-        {messages.map((msg, index) => (
-          <div 
-            key={index} 
-            className={`message ${msg.sender === currentUser ? 'sent' : 'received'}`}
-            style={{ textAlign: msg.sender === currentUser ? 'right' : 'left', margin: '10px' }}
-          >
-            <strong>{msg.sender}: </strong>
-            <span>{msg.content}</span>
-          </div>
-        ))}
+      <div className="chat-messages">
+        {messages.map((msg, index) => {
+          const isMe = msg.sender === currentUser;
+          return (
+            <div 
+              key={index} 
+              className={`message-bubble ${isMe ? 'sent' : 'received'}`}
+            >
+              {/* Solo mostramos el nombre si el mensaje es del rival, para que parezca un grupo */}
+              {!isMe && <span className="message-sender">{msg.sender}</span>}
+              <span>{msg.content}</span>
+            </div>
+          );
+        })}
+        {/* Div invisible para anclar el auto-scroll al fondo */}
         <div ref={messagesEndRef} /> 
       </div>
 
-      <form onSubmit={sendMessage} className="chat-input-area" style={{ display: 'flex', marginTop: '10px' }}>
+      <form onSubmit={sendMessage} className="chat-input-area">
         <input
           type="text"
           value={newMessage}
           onChange={(e) => setNewMessage(e.target.value)}
           placeholder="Escribe un mensaje..."
-          style={{ flexGrow: 1, padding: '10px' }}
         />
-        <button type="submit" style={{ padding: '10px 20px', marginLeft: '10px' }}>Enviar</button>
+        <button type="submit">
+          <Send size={18} />
+        </button>
       </form>
-    </div>
+    </>
   );
 };
 

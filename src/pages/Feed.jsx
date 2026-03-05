@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from 'react';
 import api from '../api/axios';
 import EquipoCard from '../components/EquipoCard';
-import { AnimatePresence } from 'framer-motion';
-import { Search } from 'lucide-react'; // Importamos el ícono para la barra
+import { AnimatePresence, motion } from 'framer-motion';
+import { Search, Map } from 'lucide-react'; 
 
 const Feed = () => {
-  const [equiposOriginales, setEquiposOriginales] = useState([]); // Guardamos la lista completa
-  const [equipos, setEquipos] = useState([]); // Los que mostramos en pantalla (filtrados)
+  const [equiposOriginales, setEquiposOriginales] = useState([]); 
+  const [equipos, setEquipos] = useState([]); 
   const [currentIndex, setCurrentIndex] = useState(0);
-  const [filtroZona, setFiltroZona] = useState(''); // Lo que el usuario escribe
+  const [filtroZona, setFiltroZona] = useState(''); 
 
   const userType = localStorage.getItem('userType');
   const userData = JSON.parse(localStorage.getItem('user'));
@@ -19,7 +19,7 @@ const Feed = () => {
       .then(res => {
         let data = res.data;
         if (userType === 'equipo') {
-          data = data.filter(e => e.id !== miId); // Ocultar mi propio equipo
+          data = data.filter(e => e.id !== miId); 
         }
         setEquiposOriginales(data);
         setEquipos(data);
@@ -27,19 +27,16 @@ const Feed = () => {
       .catch(err => console.error("Error al cargar equipos:", err));
   }, [miId, userType]);
 
-  // NUEVO: Efecto que se dispara cada vez que escribís en el buscador
   useEffect(() => {
     if (filtroZona.trim() === '') {
-      // Si la barra está vacía, mostramos todos
       setEquipos(equiposOriginales);
     } else {
-      // Filtramos ignorando mayúsculas y minúsculas
       const filtrados = equiposOriginales.filter(eq => 
         eq.zona && eq.zona.toLowerCase().includes(filtroZona.toLowerCase())
       );
       setEquipos(filtrados);
     }
-    setCurrentIndex(0); // Reiniciamos la pila de tarjetas para ver los resultados desde el principio
+    setCurrentIndex(0); 
   }, [filtroZona, equiposOriginales]);
 
   const nextCard = () => setCurrentIndex(prev => prev + 1);
@@ -67,48 +64,58 @@ const Feed = () => {
   };
 
   return (
-    <div className="feed-page">
+    <div style={{ display: 'flex', flexDirection: 'column', height: 'calc(100vh - 125px)', width: '100%', backgroundColor: '#f8f9fa' }}>
       
-      {/* --- NUEVA BARRA DE BÚSQUEDA --- */}
-      <div style={{ 
-        width: '100%', maxWidth: '350px', marginBottom: '15px', 
-        display: 'flex', alignItems: 'center', background: 'white', 
-        padding: '12px 20px', borderRadius: '30px', 
-        boxShadow: '0 4px 15px rgba(0,0,0,0.05)', border: '1px solid #eaeaea'
-      }}>
-        <Search size={20} color="#28a745" style={{marginRight: '10px'}} />
-        <input 
-          type="text" 
-          placeholder="Buscar por zona (Ej: Quilmes)..." 
-          value={filtroZona}
-          onChange={(e) => setFiltroZona(e.target.value)}
-          style={{ border: 'none', outline: 'none', width: '100%', fontSize: '1rem', color: '#333' }}
-        />
+      {/* --- BARRA DE BÚSQUEDA MODERNA --- */}
+      <div className="feed-header">
+        <div className="search-bar-modern">
+          <Search size={20} color="#888" />
+          <input 
+            type="text" 
+            placeholder="Buscar equipos en tu zona..." 
+            value={filtroZona}
+            onChange={(e) => setFiltroZona(e.target.value)}
+          />
+        </div>
       </div>
 
-      <div className="cards-stack">
-        <AnimatePresence>
-          {currentIndex < equipos.length ? (
-            <EquipoCard 
-              key={equipos[currentIndex].id}
-              equipo={equipos[currentIndex]} 
-              onLike={handleLike} 
-              onDislike={handleDislike}
-              userType={userType}
-            />
-          ) : (
-            <div className="no-more">
-              <h3>⚽ ¡Cancha vacía!</h3>
-              {/* Mensaje dinámico si no hay resultados en esa zona */}
-              {filtroZona !== '' ? (
-                <p>No encontramos equipos en "{filtroZona}".</p>
-              ) : (
-                <p>Ya viste a todos los equipos disponibles.</p>
-              )}
-              <button onClick={() => { setFiltroZona(''); setCurrentIndex(0); }} className="btn-save" style={{marginTop: '15px'}}>Ver todos</button>
-            </div>
-          )}
-        </AnimatePresence>
+      {/* --- CONTENEDOR DE TARJETAS --- */}
+      <div className="cards-container">
+        <div className="cards-stack">
+          <AnimatePresence>
+            {currentIndex < equipos.length ? (
+              <EquipoCard 
+                key={equipos[currentIndex].id}
+                equipo={equipos[currentIndex]} 
+                onLike={handleLike} 
+                onDislike={handleDislike}
+                userType={userType}
+              />
+            ) : (
+              <motion.div 
+                className="no-more-cards"
+                initial={{ opacity: 0 }} animate={{ opacity: 1 }}
+              >
+                <div style={{ padding: '20px', background: 'white', borderRadius: '50%', boxShadow: '0 4px 15px rgba(0,0,0,0.05)' }}>
+                  <Map size={48} color="#ccc" />
+                </div>
+                <h3>¡Cancha vacía!</h3>
+                {filtroZona !== '' ? (
+                  <p>No encontramos más equipos en <b>"{filtroZona}"</b>.</p>
+                ) : (
+                  <p>Ya viste a todos los equipos disponibles.</p>
+                )}
+                <button 
+                  onClick={() => { setFiltroZona(''); setCurrentIndex(0); }} 
+                  className="btn-save" 
+                  style={{marginTop: '20px', width: 'auto', padding: '10px 30px', borderRadius: '25px'}}
+                >
+                  Volver a buscar
+                </button>
+              </motion.div>
+            )}
+          </AnimatePresence>
+        </div>
       </div>
     </div>
   );
